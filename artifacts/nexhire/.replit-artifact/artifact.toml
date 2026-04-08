@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "NexHire - Hiring Platform"
+version = "1.0.0"
+id = "artifacts/nexhire"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 19235
+
+[services.development]
+run = "pnpm --filter @workspace/nexhire run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/nexhire", "run", "build" ]
+publicDir = "artifacts/nexhire/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "19235"
+BASE_PATH = "/"

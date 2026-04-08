@@ -1,0 +1,228 @@
+Act as a senior full-stack architect and UI/UX expert.
+
+Build a production-grade hiring platform called "NexHire" that competes with LinkedIn and Indeed, using ONLY free tools and NO database.
+
+========================
+⚠️ HARD CONSTRAINTS
+===================
+
+* STRICTLY NO DATABASE (no MongoDB, SQL, Firebase DB)
+* Use ONLY:
+
+  1. Google Sheets API (provided below) for ALL data
+  2. EmailJS for sending resumes
+* Must be fully deployable on Vercel (static frontend)
+* Must be scalable and white-label ready
+* UI must remain consistent across ALL pages (no bugs like white navbar)
+
+========================
+🔑 CONFIG (USE THESE)
+=====================
+
+const CONFIG = {
+ADMIN_USERNAME: "admin",
+ADMIN_PASSWORD: "yourStrongPassword123",
+SHEET_API: "https://script.google.com/macros/s/AKfycbzANoJN52hf4LrHOCRQ6DZfB1qBhQaCqRliCWV3Km8dkXfvVEw6ayoGmvv5h1Fknuhnlw/exec",
+EMAIL: "[your@email.com](mailto:your@email.com)",
+PHONE: "+91XXXXXXXXXX",
+LOGO: "/assets/logo.png"
+};
+
+========================
+🎯 PLATFORM FEATURES
+====================
+
+1. 🌐 WEBSITE (MULTI PAGE)
+
+* Home
+* Jobs
+* News
+* About
+* Contact
+* Login/Register
+
+Sticky navbar:
+
+* Same design everywhere
+* NEVER white-on-white bug
+* Professional like Indeed
+
+Footer:
+
+* Social links
+* Newsletter signup
+* Company info
+
+========================
+🎨 UI DESIGN
+============
+
+* Style inspired by:
+
+  * Indeed (layout clarity)
+  * Foundever (premium feel)
+* Light theme ONLY
+* Clean cards, spacing, shadows
+* Smooth hover effects
+* Responsive (mobile-first)
+
+========================
+💼 JOB SYSTEM
+=============
+
+* Fetch jobs from Google Sheets API
+* Display job cards:
+
+  * Title
+  * Location
+  * Type
+  * Apply button
+
+========================
+📄 APPLY SYSTEM (NO DB)
+=======================
+
+Form:
+
+* Name
+* Email
+* Phone
+* Resume upload
+* Job role
+
+On submit:
+
+* Send email via EmailJS (with resume)
+* Send data to Google Sheets API
+
+========================
+📰 NEWS SYSTEM (IMPORTANT)
+==========================
+
+* Separate “News” page
+* Admin can post updates
+* Also fetch external job news via RSS (optional)
+* Show:
+
+  * Title
+  * Description
+  * Date
+
+========================
+🔐 ADMIN PANEL (/secure-admin)
+==============================
+
+* Hidden route
+* Login required EVERY TIME (no persistent login)
+* Session expiry (localStorage timestamp)
+
+Admin features:
+
+* Add job
+* Delete job
+* Add news
+* Delete news
+
+All actions → Google Sheets API
+
+========================
+🧠 AI CHATBOT
+=============
+
+* Floating chat UI
+* Must NOT repeat responses
+* Logic:
+
+  * Predefined Q&A
+  * If unknown → show contact info
+* Capabilities:
+
+  * Guide users
+  * Suggest jobs
+  * Redirect to apply
+
+========================
+👤 AUTH SYSTEM
+==============
+
+* Google login (Firebase Auth FREE)
+* Store minimal session in localStorage
+* Used for collecting user info only
+
+========================
+📊 CAREER PROFILE BUILDER
+=========================
+
+(Multi-step form instead of quiz)
+
+* Skills
+* Experience
+* Preferred role
+* Location
+
+Save → Google Sheets
+
+========================
+🔄 WHITE LABEL CONTROL PANEL (/control-panel)
+=============================================
+
+PASSWORD PROTECTED
+
+Must allow editing:
+
+* Company name
+* Logo
+* Contact info
+* Social links
+* Colors
+* Text content
+* Sections visibility
+
+Changes stored in localStorage or JSON config
+
+========================
+📦 GOOGLE SHEETS STRUCTURE
+==========================
+
+Use different sheets:
+
+* jobs
+* applications
+* news
+* users
+
+All API calls go to provided endpoint
+
+========================
+📁 PROJECT STRUCTURE
+====================
+
+* /pages
+* /components
+* /assets
+* /config.js
+* /services/api.js
+
+========================
+🚫 DO NOT DO
+============
+
+* Do NOT use any database
+* Do NOT break navbar styling
+* Do NOT use dark theme
+* Do NOT store resumes locally
+* Do NOT make chatbot repetitive
+
+========================
+🎯 FINAL GOAL
+=============
+
+Create a beautiful, scalable, white-label hiring platform that looks like a top-tier product but runs entirely on free tools (Google Sheets + Email).
+
+Generate:
+
+1. Full code
+2. Google Apps Script example
+3. Setup steps (Sheets + EmailJS + Vercel)
+
+Keep code optimized and avoid unnecessary explanations.
