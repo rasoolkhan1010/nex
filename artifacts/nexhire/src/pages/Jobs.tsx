@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import { Search, MapPin, Filter, Briefcase, X, ChevronDown } from "lucide-react";
+import { Link } from "wouter";
 import { api, Job, SAMPLE_JOBS } from "@/services/api";
 import ApplyModal from "@/components/ApplyModal";
 
@@ -7,7 +8,19 @@ const JOB_TYPES = ["All", "Full-time", "Part-time", "Contract", "Remote", "Inter
 const CATEGORIES = ["All", "Engineering", "Design", "Product", "Marketing", "Data", "Finance", "HR", "Sales"];
 const LOCATIONS = ["All", "Bangalore", "Mumbai", "Delhi", "Hyderabad", "Pune", "Chennai", "Remote"];
 
+const BROWSE_CATEGORIES = [
+  { name: "Engineering", icon: <Briefcase size={22} color="var(--primary)" />, count: 1240 },
+  { name: "Design", icon: <Briefcase size={22} color="var(--primary)" />, count: 380 },
+  { name: "Product", icon: <Briefcase size={22} color="var(--primary)" />, count: 290 },
+  { name: "Marketing", icon: <Briefcase size={22} color="var(--primary)" />, count: 460 },
+  { name: "Data", icon: <Briefcase size={22} color="var(--primary)" />, count: 320 },
+  { name: "Finance", icon: <Briefcase size={22} color="var(--primary)" />, count: 210 },
+  { name: "HR", icon: <Briefcase size={22} color="var(--primary)" />, count: 175 },
+  { name: "Sales", icon: <Briefcase size={22} color="var(--primary)" />, count: 540 },
+];
+
 export default function Jobs() {
+  const lastUrlRef = useRef<string>("");
   const [jobs, setJobs] = useState<Job[]>([]);
   const [filtered, setFiltered] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
@@ -20,19 +33,54 @@ export default function Jobs() {
   const [currentPage, setCurrentPage] = useState(1);
   const PER_PAGE = 9;
 
+  // Fetch jobs on mount
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const s = params.get("search") || "";
-    const cat = params.get("category") || "All";
-    setSearch(s);
-    setCatFilter(cat);
-
     api.getJobs()
       .then(data => setJobs(data.length ? data : SAMPLE_JOBS))
       .catch(() => setJobs(SAMPLE_JOBS))
       .finally(() => setLoading(false));
   }, []);
 
+  // Sync URL with filter state on mount and when URL changes
+  useLayoutEffect(() => {
+    const syncUrlToState = () => {
+      const currentUrl = window.location.search;
+      if (currentUrl !== lastUrlRef.current) {
+        lastUrlRef.current = currentUrl;
+        const params = new URLSearchParams(currentUrl);
+        const newSearch = params.get("search") || "";
+        const newCat = params.get("category") || "All";
+        
+        setSearch(newSearch);
+        setCatFilter(newCat);
+        setCurrentPage(1);
+        setTypeFilter("All");
+        setLocFilter("All");
+      }
+    };
+
+    // Sync on mount
+    syncUrlToState();
+
+    // Listen for back/forward button
+    const handlePopState = () => {
+      syncUrlToState();
+    };
+
+    // Detect URL changes from Link clicks (Wouter doesn't have built-in detection)
+    const checkUrlChange = setInterval(() => {
+      syncUrlToState();
+    }, 50);
+
+    window.addEventListener("popstate", handlePopState);
+    
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+      clearInterval(checkUrlChange);
+    };
+  }, []);
+
+  // Apply filtering immediately as search/filters change
   useEffect(() => {
     let result = jobs.filter(j => j.status !== "closed");
     if (search) result = result.filter(j =>
@@ -44,7 +92,6 @@ export default function Jobs() {
     if (catFilter !== "All") result = result.filter(j => j.category === catFilter);
     if (locFilter !== "All") result = result.filter(j => j.location.includes(locFilter) || (locFilter === "Remote" && j.type === "Remote"));
     setFiltered(result);
-    setCurrentPage(1);
   }, [jobs, search, typeFilter, catFilter, locFilter]);
 
   const paginated = filtered.slice((currentPage - 1) * PER_PAGE, currentPage * PER_PAGE);
@@ -53,7 +100,7 @@ export default function Jobs() {
   function clearFilters() {
     setSearch("");
     setTypeFilter("All");
-    setCatFilter("All");
+    setCatFilter("All"); 
     setLocFilter("All");
   }
 
@@ -140,6 +187,85 @@ export default function Jobs() {
           </div>
         )}
 
+        {/* Browse by Category Section */}
+        <section style={{ padding: "48px 0", borderBottom: "1px solid var(--border)", marginBottom: 40 }}>
+          <div style={{ textAlign: "center", marginBottom: 36 }}>
+            <h2 className="section-title">Browse by Category</h2>
+            <p className="section-subtitle">
+              Discover opportunities across every field
+            </p>
+          </div>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))",
+              gap: 16,
+            }}
+          >
+            {BROWSE_CATEGORIES.map((cat) => (
+              <Link
+                key={cat.name}
+                href={`/jobs?category=${encodeURIComponent(cat.name)}`}
+                style={{ textDecoration: "none" }}
+              >
+                <div
+                  style={{
+                    background: "white",
+                    border: "1px solid var(--border)",
+                    borderRadius: 16,
+                    padding: "24px 20px",
+                    textAlign: "center",
+                    cursor: "pointer",
+                    transition: "all 0.2s",
+                    borderColor: catFilter === cat.name ? "var(--primary)" : "var(--border)",
+                    boxShadow: catFilter === cat.name ? "var(--shadow-hover)" : "none",
+                    transform: catFilter === cat.name ? "translateY(-4px)" : "translateY(0)",
+                  }}
+                  onMouseEnter={(e) => {
+                    if (catFilter !== cat.name) {
+                      const el = e.currentTarget as HTMLElement;
+                      el.style.borderColor = "var(--primary)";
+                      el.style.transform = "translateY(-4px)";
+                      el.style.boxShadow = "var(--shadow-hover)";
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (catFilter !== cat.name) {
+                      const el = e.currentTarget as HTMLElement;
+                      el.style.borderColor = "var(--border)";
+                      el.style.transform = "translateY(0)";
+                      el.style.boxShadow = "none";
+                    }
+                  }}
+                >
+                  <div style={{ marginBottom: 12, display: "flex", justifyContent: "center" }}>
+                    <div
+                      style={{
+                        width: 48,
+                        height: 48,
+                        borderRadius: 12,
+                        background: "var(--primary-light)",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      {cat.icon}
+                    </div>
+                  </div>
+                  <div style={{ fontWeight: 700, fontSize: 14, color: "#1a1a2e", marginBottom: 4, lineHeight: 1.3 }}>
+                    {cat.name}
+                  </div>
+                  <div style={{ fontSize: 12, color: "#5e5e7a", fontWeight: 500 }}>
+                    {cat.count.toLocaleString()} jobs
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        {/* Jobs Listings */}
         {loading ? (
           <div style={{ textAlign: "center", padding: 80 }}>
             <div className="spinner" />

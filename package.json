@@ -4,12 +4,14 @@
   "license": "MIT",
   "scripts": {
     "preinstall": "node -e \"const fs=require('fs'); ['.pnpm-lock.yaml', 'package-lock.json', 'yarn.lock'].forEach(f=>fs.existsSync(f)&&fs.unlinkSync(f))\"",
+    "dev": "cross-env PORT=5173 BASE_PATH=/ pnpm --filter @workspace/nexhire dev",
     "build": "pnpm run typecheck && pnpm -r --if-present run build",
     "typecheck:libs": "tsc --build",
     "typecheck": "pnpm run typecheck:libs && pnpm -r --filter \"./artifacts/**\" --filter \"./scripts\" --if-present run typecheck"
   },
   "private": true,
   "devDependencies": {
+    "cross-env": "^7.0.3",
     "prettier": "^3.8.1",
     "typescript": "~5.9.2"
   },

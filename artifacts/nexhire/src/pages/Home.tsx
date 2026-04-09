@@ -436,7 +436,7 @@ export default function Home() {
         </div>
       </section>
       {/* Categories */}
-      {/* <section style={{ padding: "72px 0" }}>
+      <section style={{ padding: "72px 0" }}>
         <div className="container">
           <div style={{ textAlign: "center", marginBottom: 44 }}>
             <h2 className="section-title">Browse by Category</h2>
@@ -494,7 +494,7 @@ export default function Home() {
             ))}
           </div>
         </div>
-      </section> */}
+      </section>
       {/* Featured Jobs */}
       <section style={{ background: "white", padding: "72px 0" }}>
         <div className="container">
